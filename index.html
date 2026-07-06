@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mariam Shop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --gold: #D4A843; --gold-light: #F0C96A; --gold-pale: #FFF8E7;
+      --black: #0D0D0D; --dark: #1A1A1A; --gray: #6B6B6B;
+      --light: #F7F5F2; --white: #FFFFFF; --green: #16A34A; --red: #DC2626;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--light); color: var(--black); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(13,13,13,0.97); backdrop-filter: blur(12px); padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 60px; border-bottom: 1px solid rgba(212,168,67,0.2); }
+    .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--gold); }
+    .cart-btn { position: relative; background: var(--gold); border: none; border-radius: 50px; padding: 8px 16px; font-size: 14px; font-weight: 700; color: var(--black); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+    .cart-btn:active { transform: scale(0.96); }
+    .cart-badge { background: var(--black); color: var(--gold); border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .hero { background: var(--dark); min-height: 55vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 50px 24px 60px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; width: 380px; height: 380px; background: radial-gradient(circle, rgba(212,168,67,0.22) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; }
+    .hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(32px, 8vw, 52px); font-weight: 900; color: var(--white); line-height: 1.1; margin-bottom: 16px; }
+    .hero h1 span { background: linear-gradient(90deg, var(--gold-light), var(--gold) 60%, #B8863A); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero p { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.6; max-width: 320px; margin-bottom: 32px; }
+    .hero-btn { background: var(--gold); color: var(--black); border: none; border-radius: 50px; padding: 14px 32px; font-size: 15px; font-weight: 700; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 8px 24px rgba(212,168,67,0.35); }
+    .hero-btn:active { transform: scale(0.97); }
+    .section-header { padding: 36px 20px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--black); }
+    .search-wrap { padding: 0 20px 20px; }
+    .search-inner { display: flex; align-items: center; background: var(--white); border: 2px solid #EDE7D8; border-radius: 50px; padding: 0 18px; gap: 10px; box-shadow: 0 4px 18px rgba(212,168,67,0.1); transition: 0.25s; }
+    .search-inner:focus-within { border-color: var(--gold); box-shadow: 0 6px 22px rgba(212,168,67,0.25); transform: translateY(-1px); }
+    .search-icon { font-size: 18px; color: var(--gold); }
+    .search-inner input { flex: 1; border: none; outline: none; padding: 15px 0; font-size: 15px; font-family: 'Inter', sans-serif; background: transparent; color: var(--black); font-weight: 500; }
+    .search-inner input::placeholder { color: #B0A898; }
+    .categories-wrap { padding: 0 20px 24px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+    .categories-wrap::-webkit-scrollbar { display: none; }
+    .cat-btn { flex-shrink: 0; padding: 9px 20px; border-radius: 50px; border: 1.5px solid #E5E0D8; background: var(--white); color: var(--gray); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap; font-family: 'Inter', sans-serif; }
+    .cat-btn.active { background: var(--black); color: var(--white); border-color: var(--black); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+    .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 20px 32px; }
+    .product-card { background: var(--white); border-radius: 18px; overflow: hidden; box-shadow: 0 3px 20px rgba(0,0,0,0.06); transition: transform 0.2s, box-shadow 0.2s; position: relative; border: 1px solid #F2EFE9; display: flex; flex-direction: column; height: 100%; }
+    .product-card:active { transform: scale(0.97); box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+    .badge-new { position: absolute; top: 10px; left: 10px; background: var(--gold); color: var(--black); font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; z-index: 2; }
+    .product-img { height: 200px; background: #FAFAF8; overflow: hidden; border-bottom: 1px solid #F0EDE6; flex-shrink: 0; position: relative; }
+    .product-img .img-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(18px) brightness(1.05); transform: scale(1.3); opacity: 0.55; }
+    .product-img .img-fg { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
+    .product-info { padding: 13px 14px 15px; display: flex; flex-direction: column; flex: 1; }
+    .product-name { font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 4px; line-height: 1.3; }
+    .product-desc { font-size: 11.5px; color: var(--gray); margin-bottom: 9px; line-height: 1.45; }
+    .product-price { font-size: 17px; font-weight: 800; color: var(--gold); margin-bottom: 11px; }
+    .product-price span { font-size: 11px; font-weight: 600; color: var(--gray); }
+    .sizes-wrap { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+    .sz-btn { padding: 6px 11px; border: 1.5px solid #E5E0D8; border-radius: 8px; background: transparent; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.15s; font-family: 'Inter', sans-serif; color: var(--black); }
+    .sz-btn.active { background: var(--black); color: var(--white); border-color: var(--black); transform: scale(1.05); }
+    .add-btn { width: 100%; background: var(--black); color: var(--white); border: none; border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; letter-spacing: 0.3px; margin-top: auto; }
+    .add-btn:active { background: var(--gold); color: var(--black); transform: scale(0.97); }
+    .stock-tag { display: inline-block; background: #DCFCE7; color: var(--green); font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; margin-bottom: 8px; }
+    .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .cart-overlay.open { opacity: 1; pointer-events: all; }
+    .cart-drawer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-radius: 24px 24px 0 0; z-index: 201; max-height: 85vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .cart-drawer.open { transform: translateY(0); }
+    .drawer-handle { width: 40px; height: 4px; background: #E5E0D8; border-radius: 2px; margin: 14px auto 0; }
+    .drawer-header { padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #F0EDE8; }
+    .drawer-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+    .close-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--light); border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .drawer-body { padding: 16px 20px; }
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--gray); }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 15px; font-weight: 500; }
+    .c-item { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #F0EDE8; }
+    .c-item-icon { width: 54px; height: 54px; background: var(--gold-pale); border-radius: 12px; overflow: hidden; font-size: 28px; flex-shrink: 0; position: relative; }
+    .c-item-icon .img-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(10px) brightness(1.05); transform: scale(1.3); opacity: 0.55; }
+    .c-item-icon .img-fg { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; display: block; }
+    .c-item-info { flex: 1; min-width: 0; }
+    .c-item-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .c-item-size { font-size: 12px; color: var(--gray); margin-bottom: 4px; }
+    .c-item-price { font-size: 14px; font-weight: 800; color: var(--gold); }
+    .qty-ctrl { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .qty-btn { width: 28px; height: 28px; border-radius: 8px; border: 1.5px solid #E5E0D8; background: var(--white); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .qty-num { font-size: 15px; font-weight: 800; min-width: 20px; text-align: center; }
+    .del-btn { width: 28px; height: 28px; border-radius: 8px; border: none; background: #FEE2E2; color: var(--red); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .payment-section { margin-top: 20px; background: var(--gold-pale); border: 1.5px solid #E8D49A; border-radius: 16px; padding: 18px; }
+    .payment-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    .pay-options { display: flex; flex-direction: column; gap: 10px; }
+    .pay-label { display: flex; align-items: center; gap: 10px; background: var(--white); border: 1.5px solid #E5E0D8; border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: 0.2s; }
+    .pay-label:has(input:checked) { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212,168,67,0.15); }
+    .pay-label input { accent-color: var(--gold); transform: scale(1.2); }
+    .pay-name { font-size: 15px; font-weight: 600; }
+    .cart-footer { padding: 16px 20px; border-top: 1px solid #F0EDE8; background: var(--white); position: sticky; bottom: 0; }
+    .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .total-label { font-size: 14px; color: var(--gray); font-weight: 500; }
+    .total-amount { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; }
+    .order-btn { width: 100%; background: #25D366; color: var(--white); border: none; border-radius: 14px; padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 6px 20px rgba(37,211,102,0.3); }
+    .order-btn:active { transform: scale(0.98); }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--black); color: var(--white); padding: 12px 22px; border-radius: 50px; font-size: 14px; font-weight: 600; z-index: 300; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    footer { background: var(--dark); color: rgba(255,255,255,0.5); text-align: center; padding: 28px 20px; font-size: 13px; }
+    footer strong { color: var(--gold); }
+    .no-results { grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray); font-size: 15px; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">Mariam Shop</div>
+    <button class="cart-btn" onclick="openCart()">
+      🛍️ Panier
+      <div class="cart-badge" id="cartCount">0</div>
+    </button>
+  </nav>
+
+  <section class="hero">
+    <p class="hero-eyebrow">✦ Bienvenue chez Mariam Shop</p>
+    <h1>Style &amp; <span>Élégance</span><br>à votre portée</h1>
+    <p>Vêtements, chaussures, parfums et accessoires de marque.</p>
+    <a href="#produits" class="hero-btn">Découvrir →</a>
+  </section>
+
+  <main id="produits">
+    <div class="section-header">
+      <h2 class="section-title">Notre Collection</h2>
+    </div>
+    <div class="search-wrap">
+      <div class="search-inner">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Rechercher un article, une marque..." oninput="searchProducts()">
+      </div>
+    </div>
+    <div class="categories-wrap">
+      <button class="cat-btn active" onclick="filterProducts('all', this)">Tous</button>
+      <button class="cat-btn" onclick="filterProducts('vetements', this)">Vêtements</button>
+      <button class="cat-btn" onclick="filterProducts('chaussures', this)">Chaussures</button>
+      <button class="cat-btn" onclick="filterProducts('accessoires', this)">Accessoires</button>
+      <button class="cat-btn" onclick="filterProducts('parfums', this)">Parfums</button>
+    </div>
+    <div class="products-grid" id="productsGrid"></div>
+  </main>
+
+  <footer>
+    <p>©️ 2026 <strong>Mariam Shop</strong> — Tous droits réservés</p>
+  </footer>
+
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-header">
+      <h2 class="drawer-title">Mon Panier</h2>
+      <button class="close-btn" onclick="closeCart()">✕</button>
+    </div>
+    <div class="drawer-body" id="cartBody"></div>
+    <div class="cart-footer" id="cartFooter" style="display:none">
+      <div class="total-row">
+        <span class="total-label">Total</span>
+        <span class="total-amount" id="totalAmount">0 MRU</span>
+      </div>
+      <button class="order-btn" onclick="sendOrder()">
+        <span>📱</span> Commander sur WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const phoneNumber = "22247096033";
+
+    const products = [
+      { id:1, name:"Robe élégante", price:1200, category:"vetements", image:"robe-rose.webp", sizes:["S","M","L","XL"], description:"Robe élégante et confortable.", stock:"Disponible" },
+      { id:2, name:"Robe pour fille", price:1000, category:"vetements", image:"robe.webp", sizes:["6 ans","8 ans","10 ans"], description:"Robe élégante et confortable pour fille, idéale pour les fêtes et les occasions spéciales.", stock:"Disponible" },
+      { id:3, name:"Robe pour fille", price:1000, category:"vetements", image:"robe2.webp", sizes:["2 ans","4 ans","6 ans","8 ans"], description:"Robe élégante et confortable pour fille, idéale pour les fêtes et les occasions spéciales.", stock:"Disponible" },
+      { id:4, name:"Chemise moderne", price:750, category:"vetements", image:"chemise.webp", sizes:["S","M","L","XL","XXL"], description:"Chemise confortable et moderne.", stock:"Disponible" },
+      { id:5, name:"Chaussures sport", price:1500, category:"chaussures", image:"https://i.ibb.co/ZR6cvs2Q/IMG-0617.jpg", sizes:[38,39,40,41,42,43], description:"Chaussures sport légères.", stock:"Disponible" },
+      { id:6, name:"Chaussures de NIKE", price:1300, category:"chaussures", image:"chaussures de nike.jpg", sizes:[38,39,40,41,42,43], description:"Chaussures sport légères et confortables.", stock:"Disponible" },
+      { id:7, name: "Chaussures de PRADA", price: 900, category: "sandales", image: "chaussures-prada.jpg", sizes: ["36", "37", "38", "39", "40"], description: "Chaussures élégantes et confortables.", stock: "Disponible" },
+      { id:8, name:"Chaussures de ZARA", price:900, category:"chaussures", image:"chaussures-zara.webp", sizes:[36,37,38,39,40], description:"Chaussures élégantes et confortables.", stock:"Disponible" },
+      { id:9, name:"Chaussures de GUESS", price:1100, category:"chaussures", image:"chassures-GUESS.jpg", sizes:[39,40,41,42,43,44], description:"Chaussures classiques en cuir.", stock:"Disponible" },
+      { id:10, name:"Chaussures de DIOR", price:1800, category:"chaussures", image:"https://i.ibb.co/d4mqYR27/IMG-0618.jpg", sizes:[39,40,41,42,43,44], description:"Chaussures classiques en cuir.", stock:"Disponible" },
+      { id:11, name:"T-shirt simple", price:500, category:"vetements", image:"T-shirt.webp", sizes:["S","M","L","XL","XXL"], description:"T-shirt simple et confortable.", stock:"Disponible" },
+      { id:12, name:"Pantelon over-size", price:500, category:"vetements", image:"pantelon.webp", sizes:["S","M","L","XL","XXL"], description:"Pantelon over-size et confortable.", stock:"Disponible" },
+      { id:13, name:"Sac de LOUIS VUITTON", price:1500, category:"accessoires", image:"sac-louis.webp", sizes:[], description:"Sac élégant et pratique.", stock:"Disponible" },
+      { id:14, name:"Montre classique", price:2000, category:"accessoires", image:"montre-classique.webp", sizes:[], description:"Montre classique et élégante.", stock:"Disponible" },
+      { id:15, name:"Dior Sauvage", price:4500, category:"parfums", image:"parfum-sauvage.webp", sizes:[], description:"Parfum elegant pour homme.", stock:"Disponible" },
+      { id:16, name:"Stronger With YOU", price:5000, category:"parfums", image:"parfum.jpg", sizes:[], description:"Parfum elegant pour homme.", stock:"Disponible" },
+      { id:17, name:"Parfum CHANEL", price:6000, category:"parfums", image:"parfum de chanel.jpg", sizes:[], description:"Parfum élégant pour homme.", stock:"Disponible" },
+      { id:18, name:"DAAREJ", price:3000, category:"parfums", image:"parfum-darrej.webp", sizes:[], description:"Parfum elegant pour homme.", stock:"Disponible" },
+      { id:19, name:"Miss Dior", price:5500, category:"parfums", image:"perfume-femme.jpg", sizes:[], description:"Parfum elegant pour femme.", stock:"Disponible" },
+      { id:20, name:"Lunettes de LOUIS VUITTON", price:800, category:"accessoires", image:"lunettes.webp", sizes:[], description:"Lunettes modernes avec un design élégant et confortable.", stock:"Disponible" },
+      { id:21, name:"Lunettes de DIOR", price:800, category:"accessoires", image:"lunette.jpg", sizes:[], description:"Lunettes modernes avec un design élégant et confortable.", stock:"Disponible" },
+      { id:22, name:"Ceinture de GUCCI", price:1200, category:"accessoires", image:"ceinture.jpg", sizes:[], description:"Ceinture élégante et pratique.", stock:"Disponible" },
+      { id:23, name: "Golden Elegance Ring", price: 1200, category: "rings", image: "rings-homme.jpg", sizes: [], description: "Bague dorée élégante au design classique.", stock: "Disponible" },
+      { id:24, name: "Silver Twist Ring", price: 850, category: "rings", image: "rings-femme.jpg", sizes: [], description: "Bague argentée au design torsadé moderne.", stock: "Disponible" },
+      { id:25, name: "Cap", price: 250, category: "accessoires", image: "cap.jpg", sizes: [], description: "Cap stylisé et confortable.", stock: "Disponible" },
+      { id:26, name: "Silk Elegance Scarf", price: 650, category: "scarves", image: "scarf.jpg", sizes: [], description: "Écharpe en soie douce avec un motif élégant.", stock: "Disponible" },
+    
+    ];
+
+    let cart = [];
+    let currentFilter = 'all';
+
+    function displayProducts(list) {
+      const grid = document.getElementById('productsGrid');
+      if (!list.length) { grid.innerHTML = '<div class="no-results">😔 Aucun produit trouvé</div>'; return; }
+      grid.innerHTML = list.map(p => `
+        <div class="product-card">
+          <div class="badge-new">NEW</div>
+          <div class="product-img">
+            ${p.image ? `<img class="img-bg" src="${p.image}" alt="" aria-hidden="true"><img class="img-fg" src="${p.image}" alt="${p.name}">` : p.icon}
+          </div>
+          <div class="product-info">
+            <div class="stock-tag">✓ ${p.stock}</div>
+            <div class="product-name">${p.name}</div>
+            <div class="product-desc">${p.description}</div>
+            <div class="product-price">${p.price} <span>MRU</span></div>
+            ${p.sizes.length ? `
+              <div class="sizes-wrap" id="sizes-${p.id}">
+                ${p.sizes.map(s => `<button class="sz-btn" onclick="selectSize(${p.id},'${s}',this)">${s}</button>`).join('')}
+              </div>
+              <input type="hidden" id="sel-${p.id}" value="">
+            ` : ''}
+            <button class="add-btn" onclick="addToCart(${p.id})"><span>+</span> Ajouter</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectSize(productId, size, btn) {
+      document.getElementById(`sel-${productId}`).value = size;
+      document.querySelectorAll(`#sizes-${productId} .sz-btn`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function filterProducts(category, btn) {
+      currentFilter = category;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const list = category === 'all' ? products : products.filter(p => p.category === category);
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      displayProducts(search ? list.filter(p => p.name.toLowerCase().includes(search)) : list);
+    }
+
+    function searchProducts() {
+      const val = document.getElementById('searchInput').value.toLowerCase();
+      const base = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
+      displayProducts(val ? base.filter(p => p.name.toLowerCase().includes(val)) : base);
+    }
+
+    function addToCart(id) {
+      const product = products.find(p => p.id === id);
+      const hasSizes = product.sizes.length > 0;
+      let size = 'Sans taille';
+      if (hasSizes) {
+        const input = document.getElementById(`sel-${id}`);
+        if (!input || !input.value) { showToast('⚠️ Choisissez une taille'); return; }
+        size = input.value;
+      }
+      const existing = cart.find(i => i.id === id && i.size === size);
+      if (existing) { existing.quantity++; }
+      else { cart.push({ id, name: product.name, price: product.price, size, quantity: 1, icon: product.icon, image: product.image }); }
+      updateCartCount();
+      showToast(`✓ ${product.name} ajouté`);
+    }
+
+    function openCart() {
+      renderCart();
+      document.getElementById('cartOverlay').classList.add('open');
+      document.getElementById('cartDrawer').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCart() {
+      document.getElementById('cartOverlay').classList.remove('open');
+      document.getElementById('cartDrawer').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function renderCart() {
+      const body = document.getElementById('cartBody');
+      const footer = document.getElementById('cartFooter');
+      if (!cart.length) {
+        body.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🛍️</div>
+            <p>Votre panier est vide</p>
+          </div>
+          <div class="payment-section">
+            <div class="payment-title">💳 Mode de paiement</div>
+            <div class="pay-options">
+              ${['Bankily','Sadad','Masrivie'].map(m => `
+                <label class="pay-label">
+                  <input type="radio" name="payment" value="${m}">
+                  <span class="pay-name">${m}</span>
+                </label>`).join('')}
+            </div>
+          </div>`;
+        footer.style.display = 'none';
+        return;
+      }
+      let total = 0;
+      body.innerHTML = cart.map(item => {
+        const sub = item.price * item.quantity;
+        total += sub;
+        return `
+          <div class="c-item">
+            <div class="c-item-icon">
+              ${item.image ? `<img class="img-bg" src="${item.image}" alt="" aria-hidden="true"><img class="img-fg" src="${item.image}" alt="${item.name}">` : item.icon}
+            </div>
+            <div class="c-item-info">
+              <div class="c-item-name">${item.name}</div>
+              <div class="c-item-size">Taille: ${item.size}</div>
+              <div class="c-item-price">${sub} MRU</div>
+            </div>
+            <div class="qty-ctrl">
+              <button class="qty-btn" onclick="changeQty(${item.id},'${item.size}',-1)">−</button>
+              <span class="qty-num">${item.quantity}</span>
+              <button class="qty-btn" onclick="changeQty(${item.id},'${item.size}',1)">+</button>
+              <button class="del-btn" onclick="removeItem(${item.id},'${item.size}')">🗑</button>
+            </div>
+          </div>`;
+      }).join('') + `
+        <div class="payment-section">
+          <div class="payment-title">💳 Mode de paiement</div>
+          <div class="pay-options">
+            ${['Bankily','Sadad','Masrivie'].map(m => `
+              <label class="pay-label">
+                <input type="radio" name="payment" value="${m}">
+                <span class="pay-name">${m}</span>
+              </label>`).join('')}
+          </div>
+        </div>`;
+      document.getElementById('totalAmount').textContent = total + ' MRU';
+      footer.style.display = 'block';
+    }
+
+    function changeQty(id, size, delta) {
+      const item = cart.find(i => i.id === id && i.size === size);
+      if (!item) return;
+      item.quantity += delta;
+      if (item.quantity <= 0) removeItem(id, size);
+      else { updateCartCount(); renderCart(); }
+    }
+
+    function removeItem(id, size) {
+      cart = cart.filter(i => !(i.id === id && i.size === size));
+      updateCartCount();
+      renderCart();
+    }
+
+    function updateCartCount() {
+      document.getElementById('cartCount').textContent = cart.reduce((sum, i) => sum + i.quantity, 0);
+    }
+
+    function sendOrder() {
+      if (!cart.length) { showToast('⚠️ Panier vide'); return; }
+      const payment = document.querySelector('input[name="payment"]:checked');
+      if (!payment) { showToast('⚠️ Choisissez un paiement'); return; }
+      let total = 0, list = '';
+      cart.forEach(item => {
+        const sub = item.price * item.quantity;
+        list += `• ${item.name} | Taille: ${item.size} | Quantité: ${item.quantity} | ${sub} MRU\n`;
+        total += sub;
+      });
+      const msg = `Bonjour Mariam Shop \nJe souhaite commander :\n\n${list}\nTotal : ${total} MRU\nMode de paiement : ${payment.value}`;
+      window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    displayProducts(products);
+  </script>
+</body>
+</html>
